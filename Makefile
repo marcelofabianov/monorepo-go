@@ -1,11 +1,12 @@
 .PHONY: help build test clean run-all run-course run-classroom run-lesson run-enrollment stop health
 
-# Colors for output
-RED=\033[0;31m
-GREEN=\033[0;32m
-YELLOW=\033[0;33m
-BLUE=\033[0;34m
-NC=\033[0m # No Color
+# Colors for output (using tput for better compatibility)
+RED := $(shell tput setaf 1 2>/dev/null || echo '')
+GREEN := $(shell tput setaf 2 2>/dev/null || echo '')
+YELLOW := $(shell tput setaf 3 2>/dev/null || echo '')
+BLUE := $(shell tput setaf 4 2>/dev/null || echo '')
+BOLD := $(shell tput bold 2>/dev/null || echo '')
+NC := $(shell tput sgr0 2>/dev/null || echo '')
 
 # Service ports
 PORT_COURSE=8080
@@ -39,22 +40,22 @@ build: build-course build-classroom build-lesson build-enrollment ## Build all s
 
 build-course: ## Build course service
 	@echo "$(BLUE)🔨 Building course service...$(NC)"
-	@cd service/course && go build -o bin/course main.go
+	@cd service/course && go build -o bin/course cmd/api/main.go
 	@echo "$(GREEN)✅ course built$(NC)"
 
 build-classroom: ## Build classroom service
 	@echo "$(BLUE)🔨 Building classroom service...$(NC)"
-	@cd service/classroom && go build -o bin/classroom main.go
+	@cd service/classroom && go build -o bin/classroom cmd/api/main.go
 	@echo "$(GREEN)✅ classroom built$(NC)"
 
 build-lesson: ## Build lesson service
 	@echo "$(BLUE)🔨 Building lesson service...$(NC)"
-	@cd service/lesson && go build -o bin/lesson main.go
+	@cd service/lesson && go build -o bin/lesson cmd/api/main.go
 	@echo "$(GREEN)✅ lesson built$(NC)"
 
 build-enrollment: ## Build enrollment service
 	@echo "$(BLUE)🔨 Building enrollment service...$(NC)"
-	@cd service/enrollment && go build -o bin/enrollment main.go
+	@cd service/enrollment && go build -o bin/enrollment cmd/api/main.go
 	@echo "$(GREEN)✅ enrollment built$(NC)"
 
 # Test targets
@@ -101,47 +102,47 @@ run-all: ## Start all services in background
 run-course-bg: ## Start course service in background
 	@echo "$(BLUE)▶ Starting course service on port $(PORT_COURSE)...$(NC)"
 	@mkdir -p $(PID_DIR) $(LOGS_DIR)
-	@WEB_HTTP_PORT=$(PORT_COURSE) nohup go run service/course/main.go > $(LOGS_DIR)/course.log 2>&1 & echo $$! > $(PID_DIR)/course.pid
+	@WEB_HTTP_PORT=$(PORT_COURSE) nohup go run service/course/cmd/api/main.go > $(LOGS_DIR)/course.log 2>&1 & echo $$! > $(PID_DIR)/course.pid
 	@sleep 1
 	@echo "$(GREEN)✅ course started (PID: $$(cat $(PID_DIR)/course.pid))$(NC)"
 
 run-classroom-bg: ## Start classroom service in background
 	@echo "$(BLUE)▶ Starting classroom service on port $(PORT_CLASSROOM)...$(NC)"
 	@mkdir -p $(PID_DIR) $(LOGS_DIR)
-	@WEB_HTTP_PORT=$(PORT_CLASSROOM) nohup go run service/classroom/main.go > $(LOGS_DIR)/classroom.log 2>&1 & echo $$! > $(PID_DIR)/classroom.pid
+	@WEB_HTTP_PORT=$(PORT_CLASSROOM) nohup go run service/classroom/cmd/api/main.go > $(LOGS_DIR)/classroom.log 2>&1 & echo $$! > $(PID_DIR)/classroom.pid
 	@sleep 1
 	@echo "$(GREEN)✅ classroom started (PID: $$(cat $(PID_DIR)/classroom.pid))$(NC)"
 
 run-lesson-bg: ## Start lesson service in background
 	@echo "$(BLUE)▶ Starting lesson service on port $(PORT_LESSON)...$(NC)"
 	@mkdir -p $(PID_DIR) $(LOGS_DIR)
-	@WEB_HTTP_PORT=$(PORT_LESSON) nohup go run service/lesson/main.go > $(LOGS_DIR)/lesson.log 2>&1 & echo $$! > $(PID_DIR)/lesson.pid
+	@WEB_HTTP_PORT=$(PORT_LESSON) nohup go run service/lesson/cmd/api/main.go > $(LOGS_DIR)/lesson.log 2>&1 & echo $$! > $(PID_DIR)/lesson.pid
 	@sleep 1
 	@echo "$(GREEN)✅ lesson started (PID: $$(cat $(PID_DIR)/lesson.pid))$(NC)"
 
 run-enrollment-bg: ## Start enrollment service in background
 	@echo "$(BLUE)▶ Starting enrollment service on port $(PORT_ENROLLMENT)...$(NC)"
 	@mkdir -p $(PID_DIR) $(LOGS_DIR)
-	@WEB_HTTP_PORT=$(PORT_ENROLLMENT) nohup go run service/enrollment/main.go > $(LOGS_DIR)/enrollment.log 2>&1 & echo $$! > $(PID_DIR)/enrollment.pid
+	@WEB_HTTP_PORT=$(PORT_ENROLLMENT) nohup go run service/enrollment/cmd/api/main.go > $(LOGS_DIR)/enrollment.log 2>&1 & echo $$! > $(PID_DIR)/enrollment.pid
 	@sleep 1
 	@echo "$(GREEN)✅ enrollment started (PID: $$(cat $(PID_DIR)/enrollment.pid))$(NC)"
 
 # Run targets - Foreground (development)
 run-course: ## Run course service in foreground
 	@echo "$(BLUE)▶ Running course service on port $(PORT_COURSE)...$(NC)"
-	@WEB_HTTP_PORT=$(PORT_COURSE) go run service/course/main.go
+	@WEB_HTTP_PORT=$(PORT_COURSE) go run service/course/cmd/api/main.go
 
 run-classroom: ## Run classroom service in foreground
 	@echo "$(BLUE)▶ Running classroom service on port $(PORT_CLASSROOM)...$(NC)"
-	@WEB_HTTP_PORT=$(PORT_CLASSROOM) go run service/classroom/main.go
+	@WEB_HTTP_PORT=$(PORT_CLASSROOM) go run service/classroom/cmd/api/main.go
 
 run-lesson: ## Run lesson service in foreground
 	@echo "$(BLUE)▶ Running lesson service on port $(PORT_LESSON)...$(NC)"
-	@WEB_HTTP_PORT=$(PORT_LESSON) go run service/lesson/main.go
+	@WEB_HTTP_PORT=$(PORT_LESSON) go run service/lesson/cmd/api/main.go
 
 run-enrollment: ## Run enrollment service in foreground
 	@echo "$(BLUE)▶ Running enrollment service on port $(PORT_ENROLLMENT)...$(NC)"
-	@WEB_HTTP_PORT=$(PORT_ENROLLMENT) go run service/enrollment/main.go
+	@WEB_HTTP_PORT=$(PORT_ENROLLMENT) go run service/enrollment/cmd/api/main.go
 
 # Health check
 health: ## Check health of all services
