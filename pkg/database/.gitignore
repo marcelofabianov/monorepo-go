@@ -1,0 +1,49 @@
+# Environment files (keep .env.example committed)
+.env
+.env.local
+.env.*.local
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+coverage.txt
+coverage.html
+coverage.xml
+c.out
+
+# Go workspace file (if running as standalone)
+go.work
+go.work.sum
+
+# Dependency directories (vendor if used)
+vendor/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Debug files
+debug
+__debug_bin
+
+# Air live reload (if used)
+.air.toml

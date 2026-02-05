@@ -1,0 +1,14 @@
+go 1.25.1
+
+use (
+./pkg/cache
+./pkg/database
+./pkg/logger
+./pkg/retry
+./pkg/validation
+./pkg/web
+./service/classroom
+./service/course
+./service/enrollment
+./service/lesson
+)
